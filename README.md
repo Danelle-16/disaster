@@ -64,10 +64,6 @@ A responsive web application that displays live global disasters, sends browser 
    docker-compose up --build
    ```
 
-4. **Access the App**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8080
-   - Database: localhost:3306
 
 ## 📚 API Endpoints
 

@@ -125,18 +125,7 @@ disaster-alert/
    NASA_API_KEY=your_key_here
    ```
 
-### Database
-Configured automatically in `docker-compose.yml`:
-- User: `disaster_user`
-- Password: `disaster_password`
-- Database: `disaster_alert`
 
-### JWT Secret
-Change these in production `.env`:
-```
-SECRET_KEY=generate-secure-random-string
-JWT_SECRET_KEY=generate-secure-random-string
-```
 
 ## 📱 Features Deep Dive
 

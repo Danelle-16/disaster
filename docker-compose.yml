@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: disaster-alert-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: disaster_alert
+      MYSQL_USER: disaster_user
+      MYSQL_PASSWORD: disaster_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - disaster-net
+
+  # Python Flask Backend
+  backend:
+    build: ./backend
+    container_name: disaster-alert-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      FLASK_ENV: production
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: disaster_user
+      DB_PASSWORD: disaster_password
+      DB_NAME: disaster_alert
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-me-in-production}
+      NASA_API_KEY: ${NASA_API_KEY}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      timeout: 10s
+      retries: 5
+    networks:
+      - disaster-net
+
+  # React Frontend
+  frontend:
+    build: ./frontend
+    container_name: disaster-alert-frontend
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_API_URL: http://backend:8080
+    ports:
+      - "3000:3000"
+    networks:
+      - disaster-net
+
+volumes:
+  db_data:
+
+networks:
+  disaster-net:
+    driver: bridge
